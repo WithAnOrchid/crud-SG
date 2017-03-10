@@ -20,6 +20,8 @@ module.exports = (event, callback) => {
     const params = {
     TableName : 'readings'
   };
+var db = new AWS.DynamoDB();
+//dynamodb.describeTable();
 
   return dynamoDb.describeTable(params, (error, data) => {
     if (error) {
