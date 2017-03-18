@@ -47,6 +47,14 @@ functions:
           method: delete
           cors: true
 
+  plot:
+    handler: handler.plot
+    events:
+      - http:
+          path: readings/plot
+          method: get
+          cors: true
+
 resources:
   Resources:
     ReadingsDynamoDbTable:
