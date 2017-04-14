@@ -8,8 +8,9 @@ module.exports = (event, callback) => {
   const data = JSON.parse(event.body);
 
   //data.id = uuid.v1();
-  var timeInMs = Date.now();
-  data.processed_at = timeInMs;
+  //var timeInMs = Date.now();
+  data.published_at = Date.now();
+  data.processed_at = Date.now();
 
   const params = {
     TableName: 'readings',
