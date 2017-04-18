@@ -77,6 +77,6 @@ resources:
             AttributeName: published_at
             KeyType: RANGE
         ProvisionedThroughput:
-          ReadCapacityUnits: 10
+          ReadCapacityUnits: 80
           WriteCapacityUnits: 10
         TableName: 'readings'
