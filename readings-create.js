@@ -13,7 +13,8 @@ module.exports = (event, callback) => {
   data.processed_at = Date.now();
 
   // Special case for TH module
-  if(data.sensor_type == "TH")
+  if(data.temperature_reading != undefined &&
+     data.temperature_reading != null)
   {
     // Split the single JSON to 2 JSONs
     data1 = {
