@@ -18,7 +18,7 @@ module.exports = (event, callback) => {
   {
     // Split the single JSON to 2 JSONs
     var data1 = {
-      sensor_id: 'TEMPERATURE' + data.sensor_id,
+      sensor_id: 'TEMPERATURE-' + data.sensor_id,
       device_id: data.device_id,
       device_type: data.device_type,
       sensor_type: 'temperature',
@@ -26,7 +26,7 @@ module.exports = (event, callback) => {
       published_at: data.published_at
     };
     var data2 = {
-      sensor_id: 'HUMIDITY' + data.sensor_id,
+      sensor_id: 'HUMIDITY-' + data.sensor_id,
       device_id: data.device_id,
       device_type: data.device_type,
       sensor_type: 'humidity',
