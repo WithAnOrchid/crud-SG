@@ -14,9 +14,45 @@ module.exports = (event, callback) => {
 
   // Special case for TH module
   if(data.temperature_reading != undefined &&
-     data.temperature_reading != null)
+   data.temperature_reading != null)
   {
-    // Split the single JSON to 2 JSONs
+
+    // NEW CHANGE
+    var lambda = new AWS.Lambda({
+    region: 'ap-southeast-1' //change to your region
+  });
+    const event = {
+      "queryStringParameters": {
+        "rh": parseFloat(data.humidity_reading),
+        "ta": parseFloat(data.temperature_reading)
+      }
+    };
+    console.log(event);
+    var PMV = 0.0;
+    var APMV = 0.0;
+    var PPD = 0.0;
+
+    lambda.invoke({
+      FunctionName: 'pmv-dev-computePMV',
+    Payload: JSON.stringify(event, null, 2) // pass params
+  }, function(error, data2) {
+    if (error) {
+        //context.done('error', error);
+        console.log("in error");
+        console.log(error);
+      }
+      if(data2.Payload){
+        console.log("in succeed");
+        //context.succeed(data.Payload)
+        const temp = JSON.parse(data2.Payload);
+        const result = JSON.parse(temp.body);
+        PMV = parseFloat(result.PMV);
+        APMV = parseFloat(result.APMV);
+        PPD = parseFloat(result.PPD);
+        console.log(result);
+
+
+            // Split the single JSON to 2 JSONs
     var data1 = {
       sensor_id: 'TEMPERATURE-' + data.sensor_id,
       device_id: data.device_id,
@@ -35,6 +71,36 @@ module.exports = (event, callback) => {
       published_at: data.published_at,
       processed_at: data.processed_at
     };
+
+    var data3 = {
+      sensor_id: 'PMV-' + data.sensor_id,
+      device_id: data.device_id,
+      device_type: data.device_type,
+      sensor_type: 'PMV_NOT_A_SENSOR',
+      sensor_reading: PMV,
+      published_at: data.published_at,
+      processed_at: Date.now()
+    };
+
+    var data4 = {
+      sensor_id: 'APMV-' + data.sensor_id,
+      device_id: data.device_id,
+      device_type: data.device_type,
+      sensor_type: 'APMV_NOT_A_SENSOR',
+      sensor_reading: APMV,
+      published_at: data.published_at,
+      processed_at: Date.now()
+    };
+
+    var data5 = {
+      sensor_id: 'PPD-' + data.sensor_id,
+      device_id: data.device_id,
+      device_type: data.device_type,
+      sensor_type: 'PPD_NOT_A_SENSOR',
+      sensor_reading: PPD,
+      published_at: data.published_at,
+      processed_at: Date.now()
+    };
     
     var params1 = {
       TableName: 'readings',
@@ -44,18 +110,55 @@ module.exports = (event, callback) => {
       TableName: 'readings',
       Item: data2
     };
+
+    var params3 = {
+      TableName: 'readings',
+      Item: data3
+    };
+
+    var params4 = {
+      TableName: 'readings',
+      Item: data4
+    };
+
+    var params5 = {
+      TableName: 'readings',
+      Item: data5
+    };
     
     dynamoDb.put(params1, function(err, data) {
       if (err) console.log("Unable to update item. Error: ", JSON.stringify(err, null, 2));
       else console.log("Updated item succeeded: ", JSON.stringify(data, null, 2));
             //next() // modify for err handling
           });
-    return dynamoDb.put(params2, (error, data) => {
+
+    dynamoDb.put(params2, function(err, data) {
+      if (err) console.log("Unable to update item. Error: ", JSON.stringify(err, null, 2));
+      else console.log("Updated item succeeded: ", JSON.stringify(data, null, 2));
+            //next() // modify for err handling
+          });
+
+    dynamoDb.put(params3, function(err, data) {
+      if (err) console.log("Unable to update item. Error: ", JSON.stringify(err, null, 2));
+      else console.log("Updated item succeeded: ", JSON.stringify(data, null, 2));
+            //next() // modify for err handling
+          });
+
+    dynamoDb.put(params4, function(err, data) {
+      if (err) console.log("Unable to update item. Error: ", JSON.stringify(err, null, 2));
+      else console.log("Updated item succeeded: ", JSON.stringify(data, null, 2));
+            //next() // modify for err handling
+          });
+
+    return dynamoDb.put(params5, (error, data) => {
       if (error) {
         callback(error);
       }
-      callback(error, params2.Item);
+      callback(error, params5.Item);
     });
+      }
+    });
+
     
     
 
