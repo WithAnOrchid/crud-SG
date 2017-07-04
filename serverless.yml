@@ -16,7 +16,7 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
         - lambda:InvokeFunction
-      Resource: "arn:aws:dynamodb:ap-southeast-1:*:*"
+      Resource: "*"
 
 functions:
   create:
